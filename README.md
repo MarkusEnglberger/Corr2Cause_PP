@@ -26,35 +26,14 @@ sbatch Training.slurm
 sbatch Evaluation.slurm
 ```
 
-
-### 1. Prepare SFT Data
-```bash
-python scripts/prepare_sft_data.py
-```
-
-### 2. Two-phase training pipeline (SFT+GRPO)
-
-
-### 3. GRPO Training
-Reinforcement learning with group relative policy optimization:
-```
-torchrun --nproc_per_node=4 scripts/train_grpo.py configs/grpo_config_7b.yaml
-```
-
 ## Evaluation
 
 ### Local Models
 See the slurm file Evaluation.slurm
 
 ### API-based Models
-Set environment variables for the APIs you want to use:
-```bash
-export OPENAI_API_KEY="your-key"
-export GOOGLE_API_KEY="your-key"
-export TOGETHER_API_KEY="your-key"
-export MOONSHOT_API_KEY="your-key"
-
-Then run 
+Set environment variables for the APIs you want to use and then run
+ 
 ```bash
 python evaluate_models_via_API.py --split "c2cpSplit1" --model_name "MODEL_NAME"
 ```
