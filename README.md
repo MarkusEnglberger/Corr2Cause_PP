@@ -2,6 +2,9 @@
 
 Code and data for training and evaluating large language models on causal reasoning tasks.
 
+## Dataset
+The Corr2Cause++ dataset is in the folder Corr2Cause++
+
 ## Requirements
 
 Install dependencies:
