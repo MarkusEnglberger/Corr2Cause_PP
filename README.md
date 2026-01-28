@@ -1,9 +1,6 @@
 # Corr2Cause++
 
-Code and data for training and evaluating large language models on causal reasoning tasks. Given statistical relationships (correlations) and a hypothesis, models must:
-1. Predict direct causal edges between variables
-2. Answer yes/no to the causal hypothesis
-
+Code and data for training and evaluating large language models on causal reasoning tasks.
 
 ## Requirements
 
