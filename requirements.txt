@@ -1,0 +1,12 @@
+torch>=2.0.0
+transformers>=4.40.0
+datasets>=2.14.0
+trl>=0.8.0
+peft>=0.8.0
+bitsandbytes>=0.41.0
+openai>=1.0.0
+google-generativeai>=0.3.0
+wandb>=0.15.0
+tqdm>=4.65.0
+pyyaml>=6.0
+accelerate>=0.25.0

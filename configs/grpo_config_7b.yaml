@@ -1,0 +1,94 @@
+# GRPO Training Configuration for C2CP (Combined Edge Prediction + Hypothesis)
+# Task: Given statistical relationships and a hypothesis:
+#   1. Predict direct causal edges
+#   2. Answer yes/no to the hypothesis
+
+# ===== Model configuration =====
+# Option 1: Continue from SFT adapters (recommended)
+model_name_or_path: "./models/deepseek_sft_c2cp_7b"
+# Option 2: Train from base model (no SFT)
+#model_name_or_path: "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+
+max_prompt_length: 1200  # Longer for premises + hypothesis
+max_completion_length: 1500  # Needs space for edges + reasoning + answer
+
+# ===== Quantization configuration =====
+use_4bit: true
+use_8bit: false
+
+# ===== LoRA configuration =====
+use_lora: true
+lora_r: 64
+lora_alpha: 64
+lora_dropout: 0.05
+lora_target_modules: "q_proj,v_proj,k_proj,o_proj,gate_proj,up_proj,down_proj"
+
+# ===== Dataset configuration =====
+dataset_path: "./data/processed/c2cpSplit1/grpo"
+max_train_samples: null  # Use all samples
+
+# ===== Task configuration =====
+task_type: "c2cp"  # Use combined edge + hypothesis reward function
+
+# ===== WandB configuration =====
+wandb_project: "c2cp-grpo7"
+
+# Output configuration
+output_dir: "./models/deepseek_grpo_c2cp_7b"
+
+# Sample logging configuration
+log_completions: true
+num_sample_generations: 3
+
+# ===== Training configuration =====
+per_device_train_batch_size: 8
+per_device_eval_batch_size: 8
+gradient_accumulation_steps: 2
+
+# Learning rate
+learning_rate: 2.0e-5
+lr_scheduler_type: "cosine"
+warmup_ratio: 0.01
+
+# Training steps
+num_train_epochs: 1
+max_steps: -1
+
+# GRPO hyperparameters
+num_iterations: 4
+num_generations: 8
+num_generations_eval : 1
+temperature: 1.0
+beta: 0.01
+
+# Optimization
+optim: "adamw_torch"
+weight_decay: 0.01
+max_grad_norm: 1.0
+gradient_checkpointing: true
+
+# Mixed precision
+bf16: true
+fp16: false
+tf32: false
+
+# Evaluation
+eval_strategy: "steps"
+eval_steps: 50
+save_strategy: "steps"
+save_steps: 50
+save_total_limit: 3
+
+# Logging
+logging_steps: 10
+logging_first_step: true
+report_to: "wandb"
+
+# Distributed training
+ddp_find_unused_parameters: false
+ddp_timeout: 3600
+
+# Other
+seed: 42
+dataloader_num_workers: 8
+remove_unused_columns: false

@@ -1,0 +1,83 @@
+# SFT Training Configuration for C2CP (Combined Edge Prediction + Hypothesis)
+# Supervised Fine-Tuning with LoRA and 4-bit quantization on correct reasoning traces
+
+# Model configuration
+#model_name_or_path: "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+model_name_or_path: "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+
+# Data configuration - using Gemini/GPT evaluation traces for C2CP
+dataset_path: "./data/processed/c2cpSplit1/sft_gemini"
+max_train_samples: null  # Use all available correct traces
+
+# Output configuration
+output_dir: "./models/deepseek_sft_c2cp"
+run_name: "deepseek-32b-sft-c2cp"
+
+# LoRA configuration
+use_lora: true
+lora_r: 64  # LoRA rank
+lora_alpha: 64  # LoRA scaling factor
+lora_dropout: 0.05
+lora_target_modules: "q_proj,v_proj,k_proj,o_proj,gate_proj,up_proj,down_proj"
+
+# 4-bit Quantization configuration
+use_4bit: true
+bnb_4bit_quant_type: "nf4"  # NormalFloat4 quantization
+use_nested_quant: true  # Double quantization for further memory savings
+
+# Sequence length
+max_seq_length: 30000  # Longer for edges + reasoning + hypothesis answer
+
+# Training hyperparameters
+per_device_train_batch_size: 1
+per_device_eval_batch_size: 1
+gradient_accumulation_steps: 4  # Effective batch size = 4 * num_gpus
+learning_rate: 0.0001
+lr_scheduler_type: "cosine"
+warmup_ratio: 0.01
+
+# Training duration
+num_train_epochs: 3
+max_steps: -1  # Use epochs instead
+
+# Optimization
+optim: "paged_adamw_8bit"  # Memory-efficient optimizer for 4-bit training
+weight_decay: 0.01
+max_grad_norm: 1.0
+gradient_checkpointing: false  # Disabled for DDP + LoRA compatibility
+
+# Mixed precision
+bf16: true  # Use bfloat16 for stability with 4-bit quantization
+fp16: false
+tf32: false
+
+# Evaluation and checkpointing
+eval_strategy: "steps"
+eval_steps: 100
+save_strategy: "steps"
+save_steps: 200
+save_total_limit: 3  # Keep only best 3 checkpoints
+load_best_model_at_end: true
+metric_for_best_model: "eval_loss"
+
+# Logging
+logging_steps: 10
+logging_first_step: true
+report_to: "wandb"
+wandb_project: "c2cp-sft"
+
+# Distributed training
+ddp_find_unused_parameters: false
+
+# Other
+seed: 42
+dataloader_num_workers: 4
+remove_unused_columns: false
+
+# Notes:
+# - Task: Combined edge prediction + hypothesis verification
+# - Training data: Correct reasoning traces from Gemini/GPT evaluation
+# - Model learns to:
+#   1. Output edges in format: "X has a direct causal effect on Y"
+#   2. Answer hypothesis with: "Therefore: Yes" or "Therefore: No"
+# - After SFT, can continue with GRPO training using grpo_config_c2cp.yaml

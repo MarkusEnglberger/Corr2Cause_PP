@@ -1,0 +1,44 @@
+# Evaluation Configuration for C2CP (Combined Edge Prediction + Hypothesis)
+# Configuration file for evaluate_model_simple.py
+# Model configuration
+# Point to the model/adapter you want to evaluate:
+# - For SFT evaluation: "./models/deepseek_sft_c2cp"
+# - For GRPO evaluation: "./models/deepseek_grpo_c2cp"
+# - For base model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+#model_path: "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+#model_path: "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+#model_path: "./models/deepseek_grpo_7b_1epoch"
+#model_path: "./models/deepseek_grpo_c2cp_7b"
+model_path: "Qwen/Qwen3-32B"
+#model_path: "./models/deepseek_grpo_c2cp_7b"
+#model_path: "./models/deepseek_grpo_c2cp"
+#model_path: "./models/deepseek_grpo_c2cp_7b/checkpoint-800"
+#model_path: "./models/deepseek_sft_c2cpN"
+#model_path: "./models/deepseek_sft_c2cp_7bN"
+use_4bit: true  # Use 4-bit quantization for model loading
+
+# Data source configuration
+use_local_data: true  # Use locally preprocessed data instead of HuggingFace
+local_data_path: "./data/processed/c2cpSplit1/grpo"  # Path to local preprocessed dataset
+cache_dir: "./data/cache"  # Cache directory for HuggingFace datasets
+
+# Evaluation configuration
+beginning: 500  # Starting index in the dataset
+max_samples: 200  # Maximum number of samples to evaluate (null = all)
+batch_size: 8  # Batch size for evaluation (smaller for longer outputs)
+max_new_tokens: 60000  # Maximum number of new tokens to generate
+
+# Output configuration
+output_dir: "./evaluation_results/c2cpSplit3"  # Directory to save evaluation results
+show_samples: 3  # Number of example predictions to display during evaluation
+
+# Notes:
+# - Task: Combined edge prediction + hypothesis verification
+# - Evaluation metrics:
+#   - Edge accuracy: Binary (correct only if ALL edges match exactly)
+#   - Hypothesis accuracy: Binary yes/no correctness
+#   - Combined accuracy: Both edges AND hypothesis must be correct
+# - Output format:
+#   - Edges: "X has a direct causal effect on Y."
+#   - Hypothesis: "Therefore: Yes" or "Therefore: No"
+# - Ground truth stored in 'forced_edges' (list of "X->Y" strings) and 'label' (0/1)
